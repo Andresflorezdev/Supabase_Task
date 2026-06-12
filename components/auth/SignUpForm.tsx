@@ -72,6 +72,8 @@ const SignUpForm = ({ setTypeSelected }: AuthFormProps) => {
 
                 setTypeSelected('sign-in');
                 form.reset();
+            } else {
+                toast.error(res.message || 'Error al registrar el usuario', { duration: 4000 });
             }
 
         } catch (error: any) {
