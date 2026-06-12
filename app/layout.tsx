@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "@/context/AuthContext";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -31,7 +32,14 @@ export default function RootLayout({
       lang="en"
       className="dark"
     >
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}<Toaster /></body>
+      <body 
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+        <Toaster />
+      </body>
     </html>
   );
 }
