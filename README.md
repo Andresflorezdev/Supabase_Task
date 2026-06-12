@@ -170,10 +170,6 @@ The application uses the following main tables:
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
-
-This project is licensed under the MIT License.
-
 ## Support
 
 For issues and questions, please open an issue on the GitHub repository.
