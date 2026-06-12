@@ -19,6 +19,7 @@ import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { AuthFormProps } from "./AuthForm";
+import { signup } from "@/actions/auth/auth";
 
 
 
@@ -34,7 +35,7 @@ const SignUpForm = ({ setTypeSelected }: AuthFormProps) => {
             .max(20, 'El nombre no puede tener más de 20 caracteres')
             .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, 'El nombre solo puede contener letras'),
 
-        email: z.email('Por favor ingresa un correo válido. Ejemplo: user@mail.com').min(1, {
+        email: z.string().email('Por favor ingresa un correo válido. Ejemplo: user@mail.com').min(1, {
             message: 'Este campo es requerido'
         }),
         password: z.string().min(6, {
@@ -60,7 +61,18 @@ const SignUpForm = ({ setTypeSelected }: AuthFormProps) => {
         setisLoading(true);
 
         try {
-            console.log(user);
+            const res = await signup(user);
+
+            if (res.success) {
+                toast.success(`Hola ${user.name}. Te hemos enviado un correo para poder verificar tu cuenta`, 
+                {
+                    duration: 5000,
+                    icon: '👋'
+                });
+
+                setTypeSelected('sign-in');
+                form.reset();
+            }
 
         } catch (error: any) {
             // Manejar errores específicos de Supabase
@@ -93,9 +105,8 @@ const SignUpForm = ({ setTypeSelected }: AuthFormProps) => {
                     </p>
                 </div>
 
-                <Form {...form}>
-                    <form onSubmit={handleSubmit(onSubmit)} className="mx-4">
-                        <div className="grid gap-2">
+                <Form form={form} onSubmit={handleSubmit(onSubmit)} className="mx-4">
+                    <div className="grid gap-2">
 
                             {/* ========== Name ========= */}
                             <FormField
@@ -173,8 +184,7 @@ const SignUpForm = ({ setTypeSelected }: AuthFormProps) => {
                                 Crear cuenta
                             </Button>
 
-                        </div>
-                    </form>
+                    </div>
                 </Form>
 
                 {/* ========== Sign In ========= */}

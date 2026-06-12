@@ -19,6 +19,7 @@ import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { AuthFormProps } from "./AuthForm";
+import { login } from "@/actions/auth/auth";
 
 
 const SignInForm = ({ setTypeSelected }: AuthFormProps) => {
@@ -27,7 +28,7 @@ const SignInForm = ({ setTypeSelected }: AuthFormProps) => {
 
     // ============ Form ============
     const formSchema = z.object({
-        email: z.email('Por favor ingresa un correo válido. Ejemplo: user@mail.com').min(1, {
+        email: z.string().email('Por favor ingresa un correo válido. Ejemplo: user@mail.com').min(1, {
             message: 'Este campo es requerido'
         }),
         password: z.string().min(6, {
@@ -52,8 +53,10 @@ const SignInForm = ({ setTypeSelected }: AuthFormProps) => {
 
         try {
 
-              console.log(data);
-         
+            const res = await login(data);
+
+            if(res.success) window.location.reload();
+
         } catch (error: any) {
             toast.error(error.message, { duration: 2500 });
         } finally {
