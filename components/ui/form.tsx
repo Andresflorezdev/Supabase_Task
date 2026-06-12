@@ -17,6 +17,8 @@ import {
 } from "react-hook-form";
 import type { ZodType } from "zod";
 
+const FormFieldContext = React.createContext<{ name: string } | null>(null);
+
 // ---------------------------------------------------------------------------
 // zodResolver – compatible con Zod v4 sin depender de @hookform/resolvers
 // ---------------------------------------------------------------------------
@@ -80,7 +82,9 @@ export const FormField = <
   const { control: contextControl } = useFormContext<TFieldValues>();
   const finalControl = control ?? contextControl;
   return (
-    <Controller name={name} control={finalControl} render={render} />
+    <FormFieldContext.Provider value={{ name }}>
+      <Controller name={name} control={finalControl} render={render} />
+    </FormFieldContext.Provider>
   );
 };
 
@@ -133,6 +137,9 @@ interface FormMessageProps extends React.HTMLAttributes<HTMLParagraphElement> {
 }
 // FormMessage – shows validation error for a field (or a generic form error)
 export const FormMessage = ({ name, className, ...props }: FormMessageProps) => {
+  const fieldContext = React.useContext(FormFieldContext);
+  const fieldName = name || fieldContext?.name;
+
   let errors: Record<string, any> = {};
   try {
     const { formState } = useFormContext();
@@ -142,10 +149,10 @@ export const FormMessage = ({ name, className, ...props }: FormMessageProps) => 
   }
 
 
-  const message = name ? (errors as any)?.[name]?.message : undefined;
+  const message = fieldName ? (errors as any)?.[fieldName]?.message : undefined;
   if (!message) return null;
   return (
-    <p className={className} {...props}>
+    <p className={`text-[0.8rem] font-medium text-destructive ${className || ""}`} {...props}>
       {String(message)}
     </p>
   );

@@ -19,6 +19,7 @@ import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { AuthFormProps } from "./AuthForm";
+import { sendRecoveryEmail } from "@/actions/auth/auth";
 
 
 const RecoverPasswordForm = ({ setTypeSelected }: AuthFormProps) => {
@@ -27,7 +28,7 @@ const RecoverPasswordForm = ({ setTypeSelected }: AuthFormProps) => {
 
     // ============ Form ============
     const formSchema = z.object({
-        email: z.email('Por favor ingresa un correo válido. Ejemplo: user@mail.com').min(1, {
+        email: z.string().email('Por favor ingresa un correo válido. Ejemplo: user@mail.com').min(1, {
             message: 'Este campo es requerido'
         }),
     })
@@ -49,8 +50,12 @@ const RecoverPasswordForm = ({ setTypeSelected }: AuthFormProps) => {
 
         try {
       
-            console.log(user);
+            const res = await sendRecoveryEmail(user);
             
+            if (res.success) {
+                toast.success(res.message, { duration: 50000 });
+                setTypeSelected('sign-in');
+            }
 
         } catch (error: any) {
             toast.error(error.message, { duration: 2500 });
@@ -72,9 +77,8 @@ const RecoverPasswordForm = ({ setTypeSelected }: AuthFormProps) => {
                         </p>
                     </div>
 
-                    <Form {...form}>
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <div className="grid gap-2">
+                    <Form form={form} onSubmit={handleSubmit(onSubmit)}>
+                        <div className="grid gap-2">
                                 {/* ========== Email ========= */}
                                 <FormField
                                     control={control}
@@ -104,8 +108,7 @@ const RecoverPasswordForm = ({ setTypeSelected }: AuthFormProps) => {
                                     )}
                                     Recuperar
                                 </Button>
-                            </div>
-                        </form>
+                        </div>
                     </Form>
 
                     {/* ========== Volver ========= */}
